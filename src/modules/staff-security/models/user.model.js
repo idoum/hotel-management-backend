@@ -21,7 +21,12 @@ const User = sequelize.define('User', {
   timestamps: false,
 });
 
-// Association: User belongs to Staff
-User.belongsTo(Staff, { foreignKey: 'staff_id' });
+User.associate = (models) => {
+  User.belongsToMany(models.Role, {
+    through: models.UserRole,
+    foreignKey: 'user_id',
+    otherKey: 'role_id',
+  });
+};
 
 module.exports = User;
