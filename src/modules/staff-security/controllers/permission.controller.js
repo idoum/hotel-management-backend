@@ -1,7 +1,6 @@
-// src/modules/staff-security/controllers/permission.controller.js
 const Permission = require('../models/permission.model');
 
-// GET : Toutes les permissions
+// Récupérer toutes les permissions
 exports.getAllPermissions = async (req, res) => {
   try {
     const permissions = await Permission.findAll();
@@ -11,7 +10,7 @@ exports.getAllPermissions = async (req, res) => {
   }
 };
 
-// GET : Permission par ID
+// Récupérer une permission par ID
 exports.getPermissionById = async (req, res) => {
   try {
     const permission = await Permission.findByPk(req.params.id);
@@ -22,7 +21,7 @@ exports.getPermissionById = async (req, res) => {
   }
 };
 
-// POST : Créer une permission
+// Créer une permission
 exports.createPermission = async (req, res) => {
   try {
     const permission = await Permission.create(req.body);
@@ -32,7 +31,7 @@ exports.createPermission = async (req, res) => {
   }
 };
 
-// PUT : Modifier une permission
+// Modifier une permission
 exports.updatePermission = async (req, res) => {
   try {
     const permission = await Permission.findByPk(req.params.id);
@@ -44,7 +43,7 @@ exports.updatePermission = async (req, res) => {
   }
 };
 
-// DELETE : Supprimer une permission
+// Supprimer une permission
 exports.deletePermission = async (req, res) => {
   try {
     const permission = await Permission.findByPk(req.params.id);

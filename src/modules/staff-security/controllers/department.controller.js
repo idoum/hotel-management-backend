@@ -1,7 +1,6 @@
-// src/modules/staff-security/controllers/department.controller.js
 const Department = require('../models/department.model');
 
-// GET : Tous les départements
+// Récupérer tous les départements
 exports.getAllDepartments = async (req, res) => {
   try {
     const departments = await Department.findAll();
@@ -11,7 +10,7 @@ exports.getAllDepartments = async (req, res) => {
   }
 };
 
-// GET : Département par ID
+// Récupérer un département par ID
 exports.getDepartmentById = async (req, res) => {
   try {
     const department = await Department.findByPk(req.params.id);
@@ -22,7 +21,7 @@ exports.getDepartmentById = async (req, res) => {
   }
 };
 
-// POST : Créer département
+// Créer un département
 exports.createDepartment = async (req, res) => {
   try {
     const department = await Department.create(req.body);
@@ -32,7 +31,7 @@ exports.createDepartment = async (req, res) => {
   }
 };
 
-// PUT : Modifier département
+// Modifier un département
 exports.updateDepartment = async (req, res) => {
   try {
     const department = await Department.findByPk(req.params.id);
@@ -44,7 +43,7 @@ exports.updateDepartment = async (req, res) => {
   }
 };
 
-// DELETE : Supprimer département
+// Supprimer un département
 exports.deleteDepartment = async (req, res) => {
   try {
     const department = await Department.findByPk(req.params.id);

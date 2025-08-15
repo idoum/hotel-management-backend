@@ -1,28 +1,37 @@
-// src/modules/staff-security/controllers/user.controller.js
 const User = require('../models/user.model');
 const Staff = require('../models/staff.model');
 const Role = require('../models/role.model');
 const UserRole = require('../models/userRole.model');
-const ActionLog = require('../models/actionLog.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const ActionLog = require('../models/actionLog.model');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
 
-// GET : Récupérer tous les utilisateurs
+// Récupérer tous les users (+ staff, roles)
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll({ include: [Staff, Role] });
+    const users = await User.findAll({
+      include: [
+        { model: Staff },
+        { model: Role }
+      ]
+    });
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error });
   }
 };
 
-// GET : Récupérer un utilisateur par son ID
+// Récupérer un user par ID
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id, { include: [Staff, Role] });
+    const user = await User.findByPk(req.params.id, {
+      include: [
+        { model: Staff },
+        { model: Role }
+      ]
+    });
     if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
     res.json(user);
   } catch (error) {
@@ -30,13 +39,12 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// POST : Créer un nouvel utilisateur
+// Créer un utilisateur, assigner les rôles
 exports.createUser = async (req, res) => {
   try {
     const { username, password, email, staff_id, roles } = req.body;
     const password_hash = await bcrypt.hash(password, 10);
     const user = await User.create({ username, password_hash, email, staff_id });
-    // Assignation des rôles
     if (roles && Array.isArray(roles)) {
       for (let roleName of roles) {
         let role = await Role.findOne({ where: { role_name: roleName } });
@@ -46,7 +54,7 @@ exports.createUser = async (req, res) => {
     await ActionLog.create({
       staff_id,
       action_type: 'create',
-      description: `Création utilisateur: ${username}`,
+      description: `Utilisateur ${username} créé`,
     });
     res.status(201).json(user);
   } catch (error) {
@@ -54,7 +62,7 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// PUT : Modifier un utilisateur
+// Modifier un utilisateur
 exports.updateUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -63,7 +71,7 @@ exports.updateUser = async (req, res) => {
     await ActionLog.create({
       staff_id: user.staff_id,
       action_type: 'update',
-      description: `Modification utilisateur: ${user.username}`,
+      description: `Modification utilisateur: ${user.username}`
     });
     res.json(user);
   } catch (error) {
@@ -71,7 +79,7 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// DELETE : Désactiver un utilisateur (soft delete)
+// Désactiver (soft delete) un utilisateur
 exports.deactivateUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -89,7 +97,7 @@ exports.deactivateUser = async (req, res) => {
   }
 };
 
-// POST : Login utilisateur (connexion)
+// Connexion utilisateur (login)
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -109,10 +117,9 @@ exports.login = async (req, res) => {
   }
 };
 
-// POST : Déconnexion utilisateur
+// Déconnexion utilisateur
 exports.logout = async (req, res) => {
   try {
-    // On peut simplement journaliser la déconnexion (token non révoqué par défaut)
     const user = await User.findByPk(req.user.userId);
     await ActionLog.create({
       staff_id: user ? user.staff_id : null,
@@ -125,7 +132,7 @@ exports.logout = async (req, res) => {
   }
 };
 
-// PATCH : Modifier mot de passe
+// Modifier mot de passe
 exports.updatePassword = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.userId);
@@ -146,9 +153,8 @@ exports.updatePassword = async (req, res) => {
   }
 };
 
-// POST : Reset mot de passe (via email)
+// Reset password via email
 exports.resetPassword = async (req, res) => {
-  // À compléter avec validation email / token de reset (ex: via email ou code temporaire, ici version basique)
   try {
     const { email, newPassword } = req.body;
     const user = await User.findOne({ where: { email } });

@@ -1,9 +1,8 @@
-// src/modules/staff-security/controllers/role.controller.js
 const Role = require('../models/role.model');
 const Permission = require('../models/permission.model');
 const RolePermission = require('../models/rolePermission.model');
 
-// GET : Rôles
+// Récupérer tous les rôles + permissions associées
 exports.getAllRoles = async (req, res) => {
   try {
     const roles = await Role.findAll({ include: [Permission] });
@@ -13,7 +12,7 @@ exports.getAllRoles = async (req, res) => {
   }
 };
 
-// GET : Rôle par ID
+// Récupérer un rôle par son ID
 exports.getRoleById = async (req, res) => {
   try {
     const role = await Role.findByPk(req.params.id, { include: [Permission] });
@@ -24,7 +23,7 @@ exports.getRoleById = async (req, res) => {
   }
 };
 
-// POST : Créer un rôle
+// Créer un rôle
 exports.createRole = async (req, res) => {
   try {
     const role = await Role.create(req.body);
@@ -34,7 +33,7 @@ exports.createRole = async (req, res) => {
   }
 };
 
-// PUT : Modifier un rôle
+// Modifier un rôle
 exports.updateRole = async (req, res) => {
   try {
     const role = await Role.findByPk(req.params.id);
@@ -46,7 +45,7 @@ exports.updateRole = async (req, res) => {
   }
 };
 
-// DELETE : Supprimer un rôle
+// Supprimer un rôle
 exports.deleteRole = async (req, res) => {
   try {
     const role = await Role.findByPk(req.params.id);
@@ -58,7 +57,7 @@ exports.deleteRole = async (req, res) => {
   }
 };
 
-// POST : Assigner des permissions à un rôle
+// Assigner des permissions
 exports.assignPermissionsToRole = async (req, res) => {
   try {
     const { permissionIds } = req.body;
