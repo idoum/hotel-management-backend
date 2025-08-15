@@ -1,16 +1,13 @@
-// src/modules/staff-security/routes/permission.routes.js
-
 const express = require('express');
 const router = express.Router();
 
 const permissionController = require('../controllers/permission.controller');
 const { validate } = require('../../../middlewares/validate');
 const { permissionSchema, permissionIdParam } = require('../validators/permission.validator');
-
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
-// CRUD Permission
+// GET toutes les permissions
 router.get(
   '/',
   authenticateJWT,
@@ -18,6 +15,7 @@ router.get(
   permissionController.getAllPermissions
 );
 
+// GET permission par id
 router.get(
   '/:id',
   authenticateJWT,
@@ -26,6 +24,7 @@ router.get(
   permissionController.getPermissionById
 );
 
+// POST créer permission
 router.post(
   '/',
   authenticateJWT,
@@ -34,6 +33,7 @@ router.post(
   permissionController.createPermission
 );
 
+// PUT modifier une permission
 router.put(
   '/:id',
   authenticateJWT,
@@ -43,6 +43,7 @@ router.put(
   permissionController.updatePermission
 );
 
+// DELETE supprimer permission
 router.delete(
   '/:id',
   authenticateJWT,

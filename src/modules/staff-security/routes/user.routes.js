@@ -1,36 +1,30 @@
-// src/modules/staff-security/routes/user.routes.js
-
 const express = require('express');
 const router = express.Router();
 
 const userController = require('../controllers/user.controller');
 const { validate } = require('../../../middlewares/validate');
 const {
-  userCreateSchema,
-  userUpdateSchema,
-  userIdParam,
-  userLoginSchema,
-  passwordUpdateSchema,
-  passwordResetSchema
+  userCreateSchema, userUpdateSchema, userIdParam,
+  userLoginSchema, passwordUpdateSchema, passwordResetSchema
 } = require('../validators/user.validator');
-
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
-// Authentification
+// POST login utilisateur
 router.post(
   '/login',
   validate(userLoginSchema),
   userController.login
 );
 
+// POST logout utilisateur (JWT nécessaire)
 router.post(
   '/logout',
   authenticateJWT,
   userController.logout
 );
 
-// CRUD User
+// GET tous les users
 router.get(
   '/',
   authenticateJWT,
@@ -38,6 +32,7 @@ router.get(
   userController.getAllUsers
 );
 
+// GET user par id
 router.get(
   '/:id',
   authenticateJWT,
@@ -46,6 +41,7 @@ router.get(
   userController.getUserById
 );
 
+// POST créer user
 router.post(
   '/',
   authenticateJWT,
@@ -54,6 +50,7 @@ router.post(
   userController.createUser
 );
 
+// PUT modif user
 router.put(
   '/:id',
   authenticateJWT,
@@ -63,7 +60,7 @@ router.put(
   userController.updateUser
 );
 
-// Désactiver (soft delete)
+// DELETE désactiver user (soft delete)
 router.delete(
   '/:id',
   authenticateJWT,
@@ -72,7 +69,7 @@ router.delete(
   userController.deactivateUser
 );
 
-// Modifier mot de passe
+// PATCH modification du mot de passe
 router.patch(
   '/update-password',
   authenticateJWT,
@@ -80,7 +77,7 @@ router.patch(
   userController.updatePassword
 );
 
-// Reset mot de passe via email
+// POST reset mot de passe
 router.post(
   '/reset-password',
   validate(passwordResetSchema),

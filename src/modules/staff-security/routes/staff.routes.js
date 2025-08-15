@@ -1,16 +1,13 @@
-// src/modules/staff-security/routes/staff.routes.js
-
 const express = require('express');
 const router = express.Router();
 
 const staffController = require('../controllers/staff.controller');
 const { validate } = require('../../../middlewares/validate');
 const { staffSchema, staffIdParam } = require('../validators/staff.validator');
-
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
-// CRUD Staff
+// GET tous les staffs
 router.get(
   '/',
   authenticateJWT,
@@ -18,6 +15,7 @@ router.get(
   staffController.getAllStaff
 );
 
+// GET staff par id
 router.get(
   '/:id',
   authenticateJWT,
@@ -26,6 +24,7 @@ router.get(
   staffController.getStaffById
 );
 
+// POST créer staff
 router.post(
   '/',
   authenticateJWT,
@@ -34,6 +33,7 @@ router.post(
   staffController.createStaff
 );
 
+// PUT modifier staff
 router.put(
   '/:id',
   authenticateJWT,
@@ -43,6 +43,7 @@ router.put(
   staffController.updateStaff
 );
 
+// DELETE supprimer staff
 router.delete(
   '/:id',
   authenticateJWT,

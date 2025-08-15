@@ -1,16 +1,13 @@
-// src/modules/staff-security/routes/actionLog.routes.js
-
 const express = require('express');
 const router = express.Router();
 
 const actionLogController = require('../controllers/actionLog.controller');
 const { validate } = require('../../../middlewares/validate');
 const { logIdParam, staffIdParam } = require('../validators/actionLog.validator');
-
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
-// Logs
+// GET tous les logs
 router.get(
   '/',
   authenticateJWT,
@@ -18,6 +15,7 @@ router.get(
   actionLogController.getAllLogs
 );
 
+// GET logs par staff id
 router.get(
   '/staff/:staffId',
   authenticateJWT,
@@ -26,6 +24,7 @@ router.get(
   actionLogController.getLogsByStaff
 );
 
+// DELETE log
 router.delete(
   '/:id',
   authenticateJWT,

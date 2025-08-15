@@ -1,16 +1,13 @@
-// src/modules/staff-security/routes/department.routes.js
-
 const express = require('express');
 const router = express.Router();
 
 const departmentController = require('../controllers/department.controller');
 const { validate } = require('../../../middlewares/validate');
 const { departmentSchema, departmentIdParam } = require('../validators/department.validator');
-
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
-// CRUD Department
+// GET tous les départements
 router.get(
   '/',
   authenticateJWT,
@@ -18,6 +15,7 @@ router.get(
   departmentController.getAllDepartments
 );
 
+// GET département par id
 router.get(
   '/:id',
   authenticateJWT,
@@ -26,6 +24,7 @@ router.get(
   departmentController.getDepartmentById
 );
 
+// POST créer département
 router.post(
   '/',
   authenticateJWT,
@@ -34,6 +33,7 @@ router.post(
   departmentController.createDepartment
 );
 
+// PUT modifier département
 router.put(
   '/:id',
   authenticateJWT,
@@ -43,6 +43,7 @@ router.put(
   departmentController.updateDepartment
 );
 
+// DELETE supprimer département
 router.delete(
   '/:id',
   authenticateJWT,

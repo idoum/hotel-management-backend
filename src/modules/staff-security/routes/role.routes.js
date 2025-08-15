@@ -1,16 +1,13 @@
-// src/modules/staff-security/routes/role.routes.js
-
 const express = require('express');
 const router = express.Router();
 
 const roleController = require('../controllers/role.controller');
 const { validate } = require('../../../middlewares/validate');
 const { roleSchema, assignPermissionsSchema, roleIdParam } = require('../validators/role.validator');
-
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
-// CRUD Role
+// GET tous les rôles
 router.get(
   '/',
   authenticateJWT,
@@ -18,6 +15,7 @@ router.get(
   roleController.getAllRoles
 );
 
+// GET rôle par id
 router.get(
   '/:id',
   authenticateJWT,
@@ -26,6 +24,7 @@ router.get(
   roleController.getRoleById
 );
 
+// POST créer rôle
 router.post(
   '/',
   authenticateJWT,
@@ -34,6 +33,7 @@ router.post(
   roleController.createRole
 );
 
+// PUT modifier rôle
 router.put(
   '/:id',
   authenticateJWT,
@@ -43,6 +43,7 @@ router.put(
   roleController.updateRole
 );
 
+// DELETE supprimer rôle
 router.delete(
   '/:id',
   authenticateJWT,
@@ -51,7 +52,7 @@ router.delete(
   roleController.deleteRole
 );
 
-// Assigner des permissions à un rôle
+// POST assigner des permissions à un rôle
 router.post(
   '/:id/permissions',
   authenticateJWT,
