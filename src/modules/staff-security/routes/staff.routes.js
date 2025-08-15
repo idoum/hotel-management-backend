@@ -13,4 +13,11 @@ router.post('/login', staffController.login);
 // Lecture staff (admin)
 router.get('/', authenticateJWT, authorizeRole('admin'), staffController.getAllStaff);
 
+router.post('/create-user',
+  authenticateJWT,
+  authorize({ roles: ['admin'] }),
+  validateBody(userCreateSchema),
+  controller.createUser
+);
+
 module.exports = router;
