@@ -1,14 +1,14 @@
 // src/modules/staff-security/validators/actionLog.validator.js
 const Joi = require('joi');
 
-// Validation paramètre ID
+// Paramètre d’URL log_id
 const logIdParam = Joi.object({
-  id: Joi.number().integer().required()
+  id: Joi.number().integer().positive().required()
 });
 
-// Validation staffId pour recherche logs
+// Paramètre URL staffId pour recherche des logs
 const staffIdParam = Joi.object({
-  staffId: Joi.number().integer().required()
+  staffId: Joi.number().integer().positive().required()
 });
 
 module.exports = {
