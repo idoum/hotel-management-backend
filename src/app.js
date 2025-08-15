@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion à MySQL réussie');
-    return sequelize.sync(); // { alter: true } ou { force: true } en dev si besoin
+    return sequelize.sync({ force: true }); // { alter: true } ou { force: true } en dev si besoin
   })
   .then(() => console.log('✅ Modèles synchronisés'))
   .catch((err) => console.error('❌ Erreur connexion MySQL :', err));
