@@ -1,3 +1,5 @@
+// src/modules/staff-security/models/rolePermission.model.js
+
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../../config/database');
 

@@ -1,6 +1,7 @@
+// src/modules/staff-security/models/actionLog.model.js
+
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../../config/database');
-const Staff = require('./staff.model');
 
 const ActionLog = sequelize.define('ActionLog', {
   log_id: {
@@ -24,7 +25,5 @@ const ActionLog = sequelize.define('ActionLog', {
   tableName: 'ActionLog',
   timestamps: false,
 });
-
-ActionLog.belongsTo(Staff, { foreignKey: 'staff_id' });
 
 module.exports = ActionLog;

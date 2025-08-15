@@ -1,6 +1,7 @@
+// src/modules/staff-security/models/user.model.js
+
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../../config/database');
-const Staff = require('./staff.model');
 
 const User = sequelize.define('User', {
   user_id: {
@@ -11,6 +12,7 @@ const User = sequelize.define('User', {
   staff_id: {
     type: DataTypes.INTEGER,
     unique: true,
+    allowNull: false,
   },
   username: { type: DataTypes.STRING, allowNull: false, unique: true },
   password_hash: { type: DataTypes.STRING, allowNull: false },
@@ -20,13 +22,5 @@ const User = sequelize.define('User', {
   tableName: 'User',
   timestamps: false,
 });
-
-User.associate = (models) => {
-  User.belongsToMany(models.Role, {
-    through: models.UserRole,
-    foreignKey: 'user_id',
-    otherKey: 'role_id',
-  });
-};
 
 module.exports = User;

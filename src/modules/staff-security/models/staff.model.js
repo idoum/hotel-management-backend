@@ -1,3 +1,5 @@
+// src/modules/staff-security/models/staff.model.js
+
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../../config/database');
 
@@ -11,7 +13,7 @@ const Staff = sequelize.define('Staff', {
   age: DataTypes.INTEGER,
   contact_info: DataTypes.STRING,
   salary: DataTypes.DECIMAL(10, 2),
-  department_id: DataTypes.INTEGER, // FK, define association later
+  department_id: DataTypes.INTEGER,
 }, {
   tableName: 'Staff',
   timestamps: false,
