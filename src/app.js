@@ -5,7 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
 
-// Création de l'application Express
+// Démarrage de l'application Express
 const app = express();
 
 // Middlewares globaux
@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Importation des routes du module staff-security
+// Import routes staff-security
 const staffRoutes = require('./modules/staff-security/routes/staff.routes');
 const userRoutes = require('./modules/staff-security/routes/user.routes');
 const roleRoutes = require('./modules/staff-security/routes/role.routes');
@@ -21,7 +21,14 @@ const permissionRoutes = require('./modules/staff-security/routes/permission.rou
 const departmentRoutes = require('./modules/staff-security/routes/department.routes');
 const actionLogRoutes = require('./modules/staff-security/routes/actionLog.routes');
 
-// Montage des routes sur un préfixe API modulaire
+// Import routes accommodation
+const roomTypeRoutes = require('./modules/accommodation/routes/roomType.routes');
+const roomRoutes = require('./modules/accommodation/routes/room.routes');
+const guestRoutes = require('./modules/accommodation/routes/guest.routes');
+const bookingRoutes = require('./modules/accommodation/routes/booking.routes');
+const paymentRoutes = require('./modules/accommodation/routes/payment.routes');
+
+// Montage des routes (API REST structure modulaire)
 app.use('/api/staff', staffRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
@@ -29,26 +36,32 @@ app.use('/api/permissions', permissionRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/logs', actionLogRoutes);
 
-// Route racine pour vérification rapide
+app.use('/api/room-types', roomTypeRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/guests', guestRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/payments', paymentRoutes);
+
+// Route racine pour vérifier le serveur
 app.get('/', (req, res) => {
-  res.json({ message: 'API Hotel Management opérationnelle ✅' });
+  res.json({ message: 'Bienvenue sur l’API Hotel Management ✅' });
 });
 
-// Synchronisation base Sequelize au démarrage (non destructive)
+// Synchronisation Sequelize au démarrage
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion à MySQL réussie');
-    return sequelize.sync({ force: true }); // { alter: true } ou { force: true } en dev si besoin
+    return sequelize.sync(); // Synchronise les modèles sans "destroy"
   })
   .then(() => console.log('✅ Modèles synchronisés'))
   .catch((err) => console.error('❌ Erreur connexion MySQL :', err));
 
-// Gestion erreurs 404 pour les routes inconnues
+// Gestion des erreurs 404
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route non trouvée' });
 });
 
-// Middleware global gestion des erreurs (Express)
+// Middleware global d’erreur Express
 app.use((err, req, res, next) => {
   console.error('Erreur Express:', err);
   res.status(500).json({ message: 'Erreur serveur', error: err.message });
