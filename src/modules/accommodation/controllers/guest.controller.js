@@ -54,6 +54,15 @@ exports.deleteGuest = async (req, res) => {
   try {
     const guest = await Guest.findByPk(req.params.id);
     if (!guest) return res.status(404).json({ message: "Client introuvable" });
+
+    // Vérifier s'il existe des réservations associées
+    const bookingsCount = await Booking.count({ where: { guest_id: guest.guest_id } });
+    if (bookingsCount > 0) {
+      return res.status(400).json({
+        message: "Impossible de supprimer ce client : il possède des réservations associées."
+      });
+    }
+
     await guest.destroy();
     await ActionLog.create({
       staff_id: req.user.staffId,
@@ -65,3 +74,4 @@ exports.deleteGuest = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error });
   }
 };
+
