@@ -1,95 +1,10 @@
-const RoomRental = require('../models/roomRental.model');
 const RentalReservation = require('../models/rentalReservation.model');
+const RoomRental = require('../models/roomRental.model');
 const Guest = require('../../accommodation/models/guest.model');
 const Staff = require('../../staff-security/models/staff.model');
 const ActionLog = require('../../staff-security/models/actionLog.model');
 
-// Liste toutes les salles disponibles
-exports.getAllRoomRentals = async (req, res) => {
-  try {
-    const rentals = await RoomRental.findAll();
-    res.json(rentals);
-  } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error });
-  }
-};
-
-// Récupère une salle par ID
-exports.getRoomRentalById = async (req, res) => {
-  try {
-    const rental = await RoomRental.findByPk(req.params.id);
-    if (!rental) return res.status(404).json({ message: "Salle introuvable" });
-    res.json(rental);
-  } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error });
-  }
-};
-
-// Création d’une nouvelle salle
-exports.createRoomRental = async (req, res) => {
-  try {
-    const rental = await RoomRental.create(req.body);
-    await ActionLog.create({
-      staff_id: req.user.staffId,
-      action_type: 'create',
-      description: `Création salle: ${rental.room_name}`
-    });
-    res.status(201).json(rental);
-  } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error });
-  }
-};
-
-// Mise à jour d’une salle
-exports.updateRoomRental = async (req, res) => {
-  try {
-    const rental = await RoomRental.findByPk(req.params.id);
-    if (!rental) return res.status(404).json({ message: "Salle introuvable" });
-
-    await rental.update(req.body);
-
-    await ActionLog.create({
-      staff_id: req.user.staffId,
-      action_type: 'update',
-      description: `Modification salle: ${rental.room_name}`
-    });
-
-    res.json(rental);
-  } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error });
-  }
-};
-
-// Suppression d’une salle en tenant compte des réservations associées
-exports.deleteRoomRental = async (req, res) => {
-  try {
-    const rental = await RoomRental.findByPk(req.params.id);
-    if (!rental) return res.status(404).json({ message: "Salle introuvable" });
-
-    // Vérifier si la salle a des réservations
-    const countReservations = await RentalReservation.count({ where: { rental_id: rental.rental_id } });
-    if (countReservations > 0) {
-      return res.status(400).json({
-        message: "Suppression impossible : la salle possède des réservations associées."
-      });
-    }
-
-    await rental.destroy();
-
-    await ActionLog.create({
-      staff_id: req.user.staffId,
-      action_type: 'delete',
-      description: `Suppression salle: ${rental.room_name}`
-    });
-
-    res.json({ message: "Salle supprimée" });
-  } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error });
-  }
-};
-
-
-// Liste toutes les réservations pour les salles
+// Liste toutes les réservations avec les entités liées
 exports.getAllReservations = async (req, res) => {
   try {
     const reservations = await RentalReservation.findAll({
@@ -101,7 +16,7 @@ exports.getAllReservations = async (req, res) => {
   }
 };
 
-// Récupérer une réservation par ID
+// Détail réservation par ID
 exports.getReservationById = async (req, res) => {
   try {
     const reservation = await RentalReservation.findByPk(req.params.id, {
@@ -114,7 +29,7 @@ exports.getReservationById = async (req, res) => {
   }
 };
 
-// Création d’une réservation avec vérifications FK
+// Création réservation avec validation des FK
 exports.createReservation = async (req, res) => {
   try {
     const roomRental = await RoomRental.findByPk(req.body.rental_id);
@@ -140,7 +55,7 @@ exports.createReservation = async (req, res) => {
   }
 };
 
-// Mise à jour d’une réservation avec vérifications FK éventuelles
+// Mise à jour réservation avec validation FK en cas de changement
 exports.updateReservation = async (req, res) => {
   try {
     const reservation = await RentalReservation.findByPk(req.params.id);
@@ -175,7 +90,7 @@ exports.updateReservation = async (req, res) => {
   }
 };
 
-// Suppression d’une réservation
+// Suppression réservation
 exports.deleteReservation = async (req, res) => {
   try {
     const reservation = await RentalReservation.findByPk(req.params.id);
