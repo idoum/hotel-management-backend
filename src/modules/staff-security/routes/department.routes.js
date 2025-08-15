@@ -1,54 +1,54 @@
-// src/modules/staff-security/routes/staff.routes.js
+// src/modules/staff-security/routes/department.routes.js
 
 const express = require('express');
 const router = express.Router();
 
-const staffController = require('../controllers/staff.controller');
+const departmentController = require('../controllers/department.controller');
 const { validate } = require('../../../middlewares/validate');
-const { staffSchema, staffIdParam } = require('../validators/staff.validator');
+const { departmentSchema, departmentIdParam } = require('../validators/department.validator');
 
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
-// CRUD Staff
+// CRUD Department
 router.get(
   '/',
   authenticateJWT,
   authorize({ roles: ['admin', 'manager'] }),
-  staffController.getAllStaff
+  departmentController.getAllDepartments
 );
 
 router.get(
   '/:id',
   authenticateJWT,
-  validate(staffIdParam, 'params'),
+  validate(departmentIdParam, 'params'),
   authorize({ roles: ['admin', 'manager'] }),
-  staffController.getStaffById
+  departmentController.getDepartmentById
 );
 
 router.post(
   '/',
   authenticateJWT,
   authorize({ roles: ['admin'] }),
-  validate(staffSchema),
-  staffController.createStaff
+  validate(departmentSchema),
+  departmentController.createDepartment
 );
 
 router.put(
   '/:id',
   authenticateJWT,
-  validate(staffIdParam, 'params'),
+  validate(departmentIdParam, 'params'),
   authorize({ roles: ['admin'] }),
-  validate(staffSchema),
-  staffController.updateStaff
+  validate(departmentSchema),
+  departmentController.updateDepartment
 );
 
 router.delete(
   '/:id',
   authenticateJWT,
-  validate(staffIdParam, 'params'),
+  validate(departmentIdParam, 'params'),
   authorize({ roles: ['admin'] }),
-  staffController.deleteStaff
+  departmentController.deleteDepartment
 );
 
 module.exports = router;
