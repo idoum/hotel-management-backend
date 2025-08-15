@@ -1,10 +1,11 @@
 // src/app.js
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
 
-// Création d'instance de l'application
+// Création de l'application Express
 const app = express();
 
 // Middlewares globaux
@@ -12,34 +13,45 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Import des routes par module
-const accommodationRoutes = require('./modules/accommodation/routes/accommodation.routes');
-const staffSecurityRoutes = require('./modules/staff-security/routes/staff.routes');
-const restaurantRoutes = require('./modules/restaurant/routes/restaurant.routes');
-const poolRoutes = require('./modules/pool/routes/pool.routes');
+// Importation des routes du module staff-security
+const staffRoutes = require('./modules/staff-security/routes/staff.routes');
+const userRoutes = require('./modules/staff-security/routes/user.routes');
+const roleRoutes = require('./modules/staff-security/routes/role.routes');
+const permissionRoutes = require('./modules/staff-security/routes/permission.routes');
+const departmentRoutes = require('./modules/staff-security/routes/department.routes');
+const actionLogRoutes = require('./modules/staff-security/routes/actionLog.routes');
 
-// Montage des routes avec un préfixe API
-app.use('/api/accommodation', accommodationRoutes);
-app.use('/api/staff', staffSecurityRoutes);
-app.use('/api/restaurant', restaurantRoutes);
-app.use('/api/pool', poolRoutes);
+// Montage des routes sur un préfixe API modulaire
+app.use('/api/staff', staffRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/permissions', permissionRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/logs', actionLogRoutes);
 
-// Route de test API
+// Route racine pour vérification rapide
 app.get('/', (req, res) => {
   res.json({ message: 'API Hotel Management opérationnelle ✅' });
 });
 
-app.use('/api/staff', staffSecurityRoutes);
-
-
-// Synchronisation DB au démarrage de l'app (sans forcer)
-// (on peut passer {alter: true} ou {force: true} en dev uniquement)
+// Synchronisation base Sequelize au démarrage (non destructive)
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion à MySQL réussie');
-    return sequelize.sync();
+    return sequelize.sync(); // { alter: true } ou { force: true } en dev si besoin
   })
-  .then(() => console.log('✅ Modèles Sequelize synchronisés'))
+  .then(() => console.log('✅ Modèles synchronisés'))
   .catch((err) => console.error('❌ Erreur connexion MySQL :', err));
+
+// Gestion erreurs 404 pour les routes inconnues
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Route non trouvée' });
+});
+
+// Middleware global gestion des erreurs (Express)
+app.use((err, req, res, next) => {
+  console.error('Erreur Express:', err);
+  res.status(500).json({ message: 'Erreur serveur', error: err.message });
+});
 
 module.exports = app;
