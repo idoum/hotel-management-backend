@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion à MySQL réussie');
-    return sequelize.sync(); // Synchronise tous les modèles
+    return sequelize.sync({ force: true }); // Synchronise tous les modèles
   })
   .then(() => console.log('✅ Modèles synchronisés'))
   .catch((err) => console.error('❌ Erreur connexion MySQL :', err));
