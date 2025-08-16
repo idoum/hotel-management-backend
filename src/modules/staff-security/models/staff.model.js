@@ -9,11 +9,20 @@ const Staff = sequelize.define('Staff', {
     primaryKey: true,
     autoIncrement: true,
   },
+
   name: { type: DataTypes.STRING, allowNull: false },
   age: DataTypes.INTEGER,
   contact_info: DataTypes.STRING,
   salary: DataTypes.DECIMAL(10, 2),
   department_id: DataTypes.INTEGER,
+  role_id: {
+  type: DataTypes.INTEGER,
+  allowNull: true,
+  references: {
+    model: 'Role',
+    key: 'role_id'
+  }
+},
 }, {
   tableName: 'Staff',
   timestamps: false,
