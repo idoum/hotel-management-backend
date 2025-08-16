@@ -7,12 +7,12 @@ const sequelize = require('./config/database');
 
 const app = express();
 
-// Middleware globaux
+// Middlewares globaux
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ========== Import des routes module par module ==========
+// ========== Import des routes par module ==========
 
 // Staff & sécurité
 const staffRoutes = require('./modules/staff-security/routes/staff.routes');
@@ -21,7 +21,7 @@ const permissionRoutes = require('./modules/staff-security/routes/permission.rou
 const departmentRoutes = require('./modules/staff-security/routes/department.routes');
 const actionLogRoutes = require('./modules/staff-security/routes/actionLog.routes');
 
-// Hébergement - Accommodation
+// Hébergement
 const roomTypeRoutes = require('./modules/accommodation/routes/roomType.routes');
 const roomRoutes = require('./modules/accommodation/routes/room.routes');
 const guestRoutes = require('./modules/accommodation/routes/guest.routes');
@@ -35,16 +35,20 @@ const menuItemRoutes = require('./modules/restaurant/routes/menuItem.routes');
 const restaurantOrderRoutes = require('./modules/restaurant/routes/restaurantOrder.routes');
 const orderItemRoutes = require('./modules/restaurant/routes/orderItem.routes');
 
-// Location de salle
+// Location de salles/événementiel
 const roomRentalRoutes = require('./modules/rental/routes/roomRental.routes');
 const rentalReservationRoutes = require('./modules/rental/routes/rentalReservation.routes');
 
 // Maintenance
 const maintenanceRoutes = require('./modules/maintenance/routes/maintenanceRequest.routes');
 
+// Piscine
+const poolRoutes = require('./modules/pool/routes/pool.routes');
+const poolReservationRoutes = require('./modules/pool/routes/poolReservation.routes');
+
 // ========== Montage des routes ==========
 
-// Staff
+// Staff & sécurité
 app.use('/api/staff', staffRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
@@ -65,19 +69,23 @@ app.use('/api/menu-items', menuItemRoutes);
 app.use('/api/restaurant-orders', restaurantOrderRoutes);
 app.use('/api/order-items', orderItemRoutes);
 
-// Location de salles
+// Location/événementiel
 app.use('/api/room-rentals', roomRentalRoutes);
 app.use('/api/room-rental-reservations', rentalReservationRoutes);
 
 // Maintenance
 app.use('/api/maintenance', maintenanceRoutes);
 
-// Endpoint racine pour test API
+// Piscine
+app.use('/api/pools', poolRoutes);
+app.use('/api/pool-reservations', poolReservationRoutes);
+
+// Endpoint racine de test
 app.get('/', (req, res) => {
-  res.json({ message: 'API Hôtel Management opérationnelle ✅' });
+  res.json({ message: 'API Hotel Management opérationnelle 🚀' });
 });
 
-// Synchronisation de la base et test de connexion
+// Connexion et synchronisation de la base
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion MySQL OK');
@@ -86,7 +94,7 @@ sequelize.authenticate()
   .then(() => console.log('✅ Modèles synchronisés'))
   .catch((err) => console.error('❌ Erreur connexion/sequelize :', err));
 
-// Middleware pour route non trouvée
+// Middleware route non trouvée
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route non trouvée' });
 });
