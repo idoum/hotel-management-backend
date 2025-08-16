@@ -89,7 +89,7 @@ app.get('/', (req, res) => {
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion MySQL OK');
-    return sequelize.sync();
+    return sequelize.sync({ force: true });
   })
   .then(() => console.log('✅ Modèles synchronisés'))
   .catch((err) => console.error('❌ Erreur connexion/sequelize :', err));

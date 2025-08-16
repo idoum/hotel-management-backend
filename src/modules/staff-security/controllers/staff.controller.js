@@ -57,27 +57,19 @@ exports.updateStaff = async (req, res) => {
 };
 
 // Supprimer un staff (et supprimer l'utilisateur associé le cas échéant)
-xports.deleteStaff = async (req, res) => {
-  const transaction = await sequelize.transaction();
+exports.deleteStaff = async (req, res) => {
   try {
     const staff = await Staff.findByPk(req.params.id, { include: User });
     if (!staff) return res.status(404).json({ message: "Personnel introuvable" });
-    
-    // 1. Log AVANT suppression
+    if (staff.User) await staff.User.destroy();
+    await staff.destroy();
     await ActionLog.create({
       staff_id: staff.staff_id,
       action_type: 'delete',
       description: `Suppression personnel: ${staff.name}`,
-    }, { transaction });
-    
-    // 2. Supprimer utilisateur puis staff
-    if (staff.User) await staff.User.destroy({ transaction });
-    await staff.destroy({ transaction });
-    
-    await transaction.commit();
+    });
     res.json({ message: "Personnel supprimé" });
   } catch (error) {
-    await transaction.rollback();
     res.status(500).json({ message: "Erreur serveur", error });
   }
 };
