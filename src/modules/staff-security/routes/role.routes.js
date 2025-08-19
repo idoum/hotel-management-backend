@@ -10,8 +10,8 @@ const { authorize } = require('../../../middlewares/authorize');
 // GET tous les rôles
 router.get(
   '/',
-  authenticateJWT,
-  authorize({ roles: ['admin'] }),
+  //authenticateJWT,
+  //authorize({ roles: ['admin'] }),
   roleController.getAllRoles
 );
 
@@ -27,8 +27,8 @@ router.get(
 // POST créer rôle
 router.post(
   '/',
-  authenticateJWT,
-  authorize({ roles: ['admin'] }),
+  //authenticateJWT,
+  //authorize({ roles: ['admin'] }),
   validate(roleSchema),
   roleController.createRole
 );
@@ -36,9 +36,9 @@ router.post(
 // PUT modifier rôle
 router.put(
   '/:id',
-  authenticateJWT,
+  //authenticateJWT,
   validate(roleIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
+ // authorize({ roles: ['admin'] }),
   validate(roleSchema),
   roleController.updateRole
 );

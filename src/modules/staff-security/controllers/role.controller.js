@@ -5,7 +5,7 @@ const RolePermission = require('../models/rolePermission.model');
 // Récupérer tous les rôles + permissions associées
 exports.getAllRoles = async (req, res) => {
   try {
-    const roles = await Role.findAll({ include: [Permission] });
+    const roles = await Role.findAll();
     res.json(roles);
   } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error });
@@ -15,7 +15,7 @@ exports.getAllRoles = async (req, res) => {
 // Récupérer un rôle par son ID
 exports.getRoleById = async (req, res) => {
   try {
-    const role = await Role.findByPk(req.params.id, { include: [Permission] });
+    const role = await Role.findByPk(req.params.id);
     if (!role) return res.status(404).json({ message: "Rôle introuvable" });
     res.json(role);
   } catch (error) {

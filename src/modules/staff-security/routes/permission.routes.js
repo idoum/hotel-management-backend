@@ -10,8 +10,8 @@ const { authorize } = require('../../../middlewares/authorize');
 // GET toutes les permissions
 router.get(
   '/',
-  authenticateJWT,
-  authorize({ roles: ['admin'] }),
+  //authenticateJWT,
+  //authorize({ roles: ['admin'] }),
   permissionController.getAllPermissions
 );
 
@@ -27,8 +27,8 @@ router.get(
 // POST créer permission
 router.post(
   '/',
-  authenticateJWT,
-  authorize({ roles: ['admin'] }),
+  //authenticateJWT,
+  //authorize({ roles: ['admin'] }),
   validate(permissionSchema),
   permissionController.createPermission
 );
@@ -36,9 +36,9 @@ router.post(
 // PUT modifier une permission
 router.put(
   '/:id',
-  authenticateJWT,
+  //authenticateJWT,
   validate(permissionIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
+  //authorize({ roles: ['admin'] }),
   validate(permissionSchema),
   permissionController.updatePermission
 );
@@ -46,9 +46,9 @@ router.put(
 // DELETE supprimer permission
 router.delete(
   '/:id',
-  authenticateJWT,
+  //authenticateJWT,
   validate(permissionIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
+  //authorize({ roles: ['admin'] }),
   permissionController.deletePermission
 );
 
