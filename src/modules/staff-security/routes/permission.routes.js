@@ -7,6 +7,9 @@ const { permissionSchema, permissionIdParam } = require('../validators/permissio
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
+// Debug : Vérifier l'import
+console.log('🔍 Permission Controller methods:', Object.keys(permissionController));
+
 // GET toutes les permissions
 router.get(
   '/',
@@ -51,5 +54,8 @@ router.delete(
   //authorize({ roles: ['admin'] }),
   permissionController.deletePermission
 );
+
+// Routes spéciales
+router.get('/:id/can-delete', permissionController.canDeletePermission);
 
 module.exports = router;
