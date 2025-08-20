@@ -8,9 +8,15 @@ const sequelize = require('./config/database');
 const app = express();
 
 // Middlewares globaux
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ✅ IMPORTANT - Import des associations AVANT les routes
+require('./modules/staff-security/associations');
 
 // ========== Import des routes par module ==========
 
@@ -20,6 +26,8 @@ const roleRoutes = require('./modules/staff-security/routes/role.routes');
 const permissionRoutes = require('./modules/staff-security/routes/permission.routes');
 const departmentRoutes = require('./modules/staff-security/routes/department.routes');
 const actionLogRoutes = require('./modules/staff-security/routes/actionLog.routes');
+const userRoutes = require('./modules/staff-security/routes/user.routes');
+const authRoutes = require('./modules/staff-security/routes/auth.routes');
 
 // Hébergement
 const roomTypeRoutes = require('./modules/accommodation/routes/roomType.routes');
@@ -48,8 +56,12 @@ const poolReservationRoutes = require('./modules/pool/routes/poolReservation.rou
 
 // ========== Montage des routes ==========
 
+// Routes d'authentification (publiques)
+app.use('/api/auth', authRoutes);
+
 // Staff & sécurité
 app.use('/api/staff', staffRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/departments', departmentRoutes);
@@ -82,27 +94,74 @@ app.use('/api/pool-reservations', poolReservationRoutes);
 
 // Endpoint racine de test
 app.get('/', (req, res) => {
-  res.json({ message: 'API Hotel Management opérationnelle 🚀' });
+  res.json({ 
+    message: 'API Hotel Management opérationnelle 🚀',
+    version: '2.0.0',
+    modules: [
+      'staff-security', 'accommodation', 'restaurant', 
+      'rental', 'maintenance', 'pool'
+    ],
+    features: [
+      'Authentication', 'User Management', 'Role-Based Access Control',
+      'Staff Management', 'Department Management', 'Audit Logging'
+    ]
+  });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    database: 'connected' // À améliorer avec vraie vérification
+  });
 });
 
 // Connexion et synchronisation de la base
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion MySQL OK');
-    return sequelize.sync({ force: true });
+    return sequelize.sync({ 
+      force: true, // ✅ IMPORTANT: Ne pas recréer les tables en production
+      alter: process.env.NODE_ENV === 'development' // Permettre ALTER en dev seulement
+    });
   })
   .then(() => console.log('✅ Modèles synchronisés'))
   .catch((err) => console.error('❌ Erreur connexion/sequelize :', err));
 
 // Middleware route non trouvée
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Route non trouvée' });
+  res.status(404).json({ 
+    message: 'Route non trouvée',
+    path: req.path,
+    method: req.method
+  });
 });
 
-// Middleware global de gestion d’erreur
+// Middleware global de gestion d'erreur
 app.use((err, req, res, next) => {
   console.error('Erreur Express :', err);
-  res.status(500).json({ message: 'Erreur serveur', error: err.message });
+  
+  // Erreurs de validation Joi
+  if (err.isJoi) {
+    return res.status(400).json({ 
+      message: 'Données invalides', 
+      details: err.details.map(d => d.message) 
+    });
+  }
+  
+  // Erreurs Sequelize
+  if (err.name?.startsWith('Sequelize')) {
+    return res.status(500).json({ 
+      message: 'Erreur base de données', 
+      error: process.env.NODE_ENV === 'development' ? err.message : 'Erreur interne'
+    });
+  }
+  
+  res.status(500).json({ 
+    message: 'Erreur serveur', 
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Erreur interne'
+  });
 });
 
 module.exports = app;

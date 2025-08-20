@@ -1,11 +1,14 @@
 {
   "name": "hotel-management-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest"
+    "test": "jest",
+    "db:create": "node scripts/create-database.js",
+    "db:seed": "node scripts/seed-database.js",
+    "db:reset": "node scripts/reset-database.js"
   },
   "keywords": [],
   "author": "",

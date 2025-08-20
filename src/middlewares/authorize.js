@@ -1,43 +1,50 @@
-const User = require('../modules/staff-security/models/user.model');
-const Role = require('../modules/staff-security/models/role.model');
-const Permission = require('../modules/staff-security/models/permission.model');
-
-// Vérifie que l’utilisateur possède au moins un rôle ou une permission parmi ceux requis
-const authorize = ({ roles = [], permissions = [] }) => {
-  return async (req, res, next) => {
+exports.authorize = (options = {}) => {
+  return (req, res, next) => {
     try {
-      const userId = req.user.userId;
-      if (!userId) return res.status(401).json({ message: 'Utilisateur non authentifié' });
-
-      // Récupère l’utilisateur avec ses rôles et permissions
-      const user = await User.findByPk(userId, {
-        include: {
-          model: Role,
-          include: Permission,
-        },
-      });
-
-      if (!user) return res.status(401).json({ message: 'Utilisateur non trouvé' });
-
-      // Récupère tous les noms de rôles et de permissions
-      const userRoles = user.Roles.map(r => r.role_name);
-      const userPermissions = user.Roles.flatMap(role =>
-        role.Permissions.map(p => p.permission_name)
-      );
-
-      // Check rôle OU permission (au moins une menée)
-      const roleOk = roles.length === 0 || roles.some(role => userRoles.includes(role));
-      const permOk = permissions.length === 0 || permissions.some(perm => userPermissions.includes(perm));
-
-      if (!roleOk && !permOk) {
-        return res.status(403).json({ message: "Accès refusé : rôle ou permission manquant" });
+      const user = req.user;
+      
+      if (!user) {
+        return res.status(401).json({ message: "Authentification requise" });
       }
+
+      // Vérifier les rôles si spécifiés
+      if (options.roles && Array.isArray(options.roles)) {
+        const hasRole = options.roles.some(role => user.roles.includes(role));
+        if (!hasRole) {
+          return res.status(403).json({ 
+            message: "Rôle insuffisant", 
+            required: options.roles,
+            current: user.roles 
+          });
+        }
+      }
+
+      // Vérifier les permissions si spécifiées
+      if (options.permissions && Array.isArray(options.permissions)) {
+        const hasPermission = options.permissions.some(permission => 
+          user.permissions.includes(permission)
+        );
+        if (!hasPermission) {
+          return res.status(403).json({ 
+            message: "Permission insuffisante",
+            required: options.permissions,
+            current: user.permissions 
+          });
+        }
+      }
+
+      // Vérifier si c'est son propre compte (pour certaines actions)
+      if (options.ownResource && req.params.id) {
+        const resourceId = parseInt(req.params.id);
+        if (resourceId !== user.userId && !user.roles.includes('admin')) {
+          return res.status(403).json({ message: "Accès autorisé seulement à son propre compte" });
+        }
+      }
+
       next();
-    } catch (err) {
-      console.error('Erreur authorisation', err);
-      res.status(500).json({ message: 'Erreur serveur' });
+    } catch (error) {
+      console.error('❌ Erreur autorisation:', error);
+      return res.status(500).json({ message: "Erreur serveur autorisation" });
     }
   };
 };
-
-module.exports = { authorize };

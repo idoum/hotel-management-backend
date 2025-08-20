@@ -10,25 +10,25 @@ const { authorize } = require('../../../middlewares/authorize');
 // GET tous les départements
 router.get(
   '/',
-  authenticateJWT,
-  authorize({ roles: ['admin', 'manager'] }),
+  //authenticateJWT,
+  //authorize({ roles: ['admin', 'manager'] }),
   departmentController.getAllDepartments
 );
 
 // GET département par id
 router.get(
   '/:id',
-  authenticateJWT,
+  //authenticateJWT,
   validate(departmentIdParam, 'params'),
-  authorize({ roles: ['admin', 'manager'] }),
+  //authorize({ roles: ['admin', 'manager'] }),
   departmentController.getDepartmentById
 );
 
 // POST créer département
 router.post(
   '/',
-  authenticateJWT,
-  authorize({ roles: ['admin'] }),
+  //authenticateJWT,
+  //authorize({ roles: ['admin'] }),
   validate(departmentSchema),
   departmentController.createDepartment
 );
@@ -36,9 +36,9 @@ router.post(
 // PUT modifier département
 router.put(
   '/:id',
-  authenticateJWT,
+  //authenticateJWT,
   validate(departmentIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
+  //authorize({ roles: ['admin'] }),
   validate(departmentSchema),
   departmentController.updateDepartment
 );
@@ -46,9 +46,9 @@ router.put(
 // DELETE supprimer département
 router.delete(
   '/:id',
-  authenticateJWT,
+  //authenticateJWT,
   validate(departmentIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
+  //authorize({ roles: ['admin'] }),
   departmentController.deleteDepartment
 );
 

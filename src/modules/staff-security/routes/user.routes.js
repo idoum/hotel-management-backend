@@ -1,87 +1,81 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const userController = require('../controllers/user.controller');
-const { validate } = require('../../../middlewares/validate');
-const {
-  userCreateSchema, userUpdateSchema, userIdParam,
-  userLoginSchema, passwordUpdateSchema, passwordResetSchema
-} = require('../validators/user.validator');
-const { authenticateJWT } = require('../../../middlewares/authenticate');
-const { authorize } = require('../../../middlewares/authorize');
+const userController = require("../controllers/user.controller");
+const authController = require("../controllers/auth.controller");
+const { validate } = require("../../../middlewares/validate");
+const { userSchema, userIdParam, updatePasswordSchema, updateUserRolesSchema } = require("../validators/user.validator");
+const { authenticateJWT } = require("../../../middlewares/authenticate");
+const { authorize } = require("../../../middlewares/authorize");
 
-// POST login utilisateur
-router.post(
-  '/login',
-  validate(userLoginSchema),
-  userController.login
-);
-
-// POST logout utilisateur (JWT nécessaire)
-router.post(
-  '/logout',
-  authenticateJWT,
-  userController.logout
-);
-
-// GET tous les users
+// Routes utilisateurs
 router.get(
-  '/',
-  authenticateJWT,
-  authorize({ roles: ['admin'] }),
+  "/",
+  // authenticateJWT,
+  // authorize({ permissions: ['user_read'] }),
   userController.getAllUsers
 );
 
-// GET user par id
 router.get(
-  '/:id',
-  authenticateJWT,
-  validate(userIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
+  "/:id",
+  // authenticateJWT,
+  validate(userIdParam, "params"),
+  // authorize({ permissions: ['user_read'] }),
   userController.getUserById
 );
 
-// POST créer user
 router.post(
-  '/',
-  authenticateJWT,
-  authorize({ roles: ['admin'] }),
-  validate(userCreateSchema),
+  "/",
+  // authenticateJWT,
+  // authorize({ permissions: ['user_create'] }),
+  validate(userSchema),
   userController.createUser
 );
 
-// PUT modif user
 router.put(
-  '/:id',
-  authenticateJWT,
-  validate(userIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
-  validate(userUpdateSchema),
+  "/:id",
+  // authenticateJWT,
+  validate(userIdParam, "params"),
+  // authorize({ permissions: ['user_update'] }),
   userController.updateUser
 );
 
-// DELETE désactiver user (soft delete)
 router.delete(
-  '/:id',
-  authenticateJWT,
-  validate(userIdParam, 'params'),
-  authorize({ roles: ['admin'] }),
-  userController.deactivateUser
+  "/:id",
+  // authenticateJWT,
+  validate(userIdParam, "params"),
+  // authorize({ permissions: ['user_delete'] }),
+  userController.deleteUser
 );
 
-// PATCH modification du mot de passe
-router.patch(
-  '/update-password',
-  authenticateJWT,
-  validate(passwordUpdateSchema),
+// Gestion des rôles
+router.get(
+  "/:id/roles",
+  // authenticateJWT,
+  userController.getUserRoles
+);
+
+router.put(
+  "/:id/roles",
+  // authenticateJWT,
+  // authorize({ permissions: ['user_update'] }),
+  validate(updateUserRolesSchema),
+  userController.updateUserRoles
+);
+
+// Gestion des permissions
+router.get(
+  "/:id/permissions",
+  // authenticateJWT,
+  userController.getUserPermissions
+);
+
+// Changement de mot de passe
+router.put(
+  "/:id/password",
+  // authenticateJWT,
+  validate(updatePasswordSchema),
   userController.updatePassword
-);
-
-// POST reset mot de passe
-router.post(
-  '/reset-password',
-  validate(passwordResetSchema),
-  userController.resetPassword
 );
 
 module.exports = router;

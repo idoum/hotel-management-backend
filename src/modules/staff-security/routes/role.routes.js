@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+// const roleController = require("../controllers/role.controller");
 const roleController = require("../controllers/role.controller");
+
 const { validate } = require("../../../middlewares/validate");
 const {  roleSchema,  assignPermissionsSchema,  roleIdParam,} = require("../validators/role.validator");
 const { authenticateJWT } = require("../../../middlewares/authenticate");
@@ -51,9 +53,9 @@ router.put(
 // DELETE supprimer rôle
 router.delete(
   "/:id",
-  authenticateJWT,
+  //authenticateJWT,
   validate(roleIdParam, "params"),
-  authorize({ roles: ["admin"] }),
+ // authorize({ roles: ["admin"] }),
   roleController.deleteRole
 );
 
