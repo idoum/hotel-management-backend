@@ -21,13 +21,13 @@ require('./modules/staff-security/associations');
 // ========== Import des routes par module ==========
 
 // Staff & sécurité
+const authRoutes = require('./modules/staff-security/routes/auth.routes');
+const userRoutes = require('./modules/staff-security/routes/user.routes');
 const staffRoutes = require('./modules/staff-security/routes/staff.routes');
 const roleRoutes = require('./modules/staff-security/routes/role.routes');
 const permissionRoutes = require('./modules/staff-security/routes/permission.routes');
 const departmentRoutes = require('./modules/staff-security/routes/department.routes');
 const actionLogRoutes = require('./modules/staff-security/routes/actionLog.routes');
-const userRoutes = require('./modules/staff-security/routes/user.routes');
-const authRoutes = require('./modules/staff-security/routes/auth.routes');
 
 // Hébergement
 const roomTypeRoutes = require('./modules/accommodation/routes/roomType.routes');
@@ -60,8 +60,8 @@ const poolReservationRoutes = require('./modules/pool/routes/poolReservation.rou
 app.use('/api/auth', authRoutes);
 
 // Staff & sécurité
-app.use('/api/staff', staffRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/staff', staffRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/departments', departmentRoutes);
