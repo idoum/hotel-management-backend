@@ -9,7 +9,7 @@ const { authenticateJWT } = require("../../../middlewares/authenticate");
 // Routes publiques
 router.post(
   "/login",
-  validate(loginSchema),
+  //validate(loginSchema),
   authController.login
 );
 
@@ -20,6 +20,9 @@ router.post(
 );
 
 // Routes protégées
+router.get('/me', authenticateJWT, authController.getMe);
+
+
 router.post(
   "/logout",
   authenticateJWT,

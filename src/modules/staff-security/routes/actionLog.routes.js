@@ -7,6 +7,9 @@ const { logIdParam, staffIdParam } = require('../validators/actionLog.validator'
 const { authenticateJWT } = require('../../../middlewares/authenticate');
 const { authorize } = require('../../../middlewares/authorize');
 
+// Route pour récupérer les audit logs
+router.get('/audit-logs', actionLogController.getAuditLogs);
+
 // GET tous les logs
 router.get(
   '/',

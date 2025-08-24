@@ -122,7 +122,7 @@ sequelize.authenticate()
   .then(() => {
     console.log('✅ Connexion MySQL OK');
     return sequelize.sync({ 
-      force: true, // ✅ IMPORTANT: Ne pas recréer les tables en production
+      force: false, // ✅ IMPORTANT: Ne pas recréer les tables en production
       alter: process.env.NODE_ENV === 'development' // Permettre ALTER en dev seulement
     });
   })
