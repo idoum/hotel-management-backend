@@ -83,3 +83,49 @@ exports.deleteLog = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error });
   }
 };
+
+// ✅ AJOUT - Méthode manquante
+exports.createLog = async (req, res) => {
+  try {
+    const { staff_id, action_type, description, ip_address, user_agent } = req.body;
+    
+    console.log('🚀 audit.controller: Creating new log', { staff_id, action_type });
+    
+    const newLog = await ActionLog.create({
+      staff_id,
+      action_type,
+      description,
+      action_date: new Date(),
+      ip_address: ip_address || req.ip,
+      user_agent: user_agent || req.get('User-Agent')
+    });
+    
+    // Récupérer le log avec les relations
+    const logWithStaff = await ActionLog.findByPk(newLog.log_id, {
+      include: [
+        {
+          model: Staff,
+          as: 'staff',
+          attributes: ['staff_id', 'name'],
+          required: false
+        }
+      ]
+    });
+    
+    console.log('✅ audit.controller: Log created successfully');
+    
+    res.status(201).json({
+      success: true,
+      data: logWithStaff,
+      message: 'Log créé avec succès'
+    });
+    
+  } catch (error) {
+    console.error('❌ audit.controller: Error creating log:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la création du log',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Erreur interne'
+    });
+  }
+};

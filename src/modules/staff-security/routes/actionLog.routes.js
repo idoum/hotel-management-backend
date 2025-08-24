@@ -10,6 +10,13 @@ const { authorize } = require('../../../middlewares/authorize');
 // Route pour récupérer les audit logs
 router.get('/audit-logs', actionLogController.getAuditLogs);
 
+// ✅ AJOUT - Route pour créer un log
+router.post('/', 
+  authenticateJWT,
+  authorize({ roles: ['admin', 'manager'] }),
+  actionLogController.createLog
+);
+
 // GET tous les logs
 router.get(
   '/',
